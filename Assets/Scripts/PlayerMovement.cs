@@ -1,4 +1,4 @@
-﻿ using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,17 +27,13 @@ public class PlayerMovement : MonoBehaviour
         playerController = GetComponent<CharacterController>();
 
         Cursor.lockState = CursorLockMode.Locked;   // Блокировка курсора
+
+        Debug.Log(playersOnScene.GetPlayersPosition(player.transform.position, 1).Count);
     }
 
     void Update()
     {
         PlayerGravitation();
-
-        Vector3 movement = new Vector3();
-        movement.x = 1;
-        movement.z = 1;    
-        
-        PlayerWalking(movement, 1.5f);  
     }
 
     // Ходьба персонажа:
@@ -46,7 +42,8 @@ public class PlayerMovement : MonoBehaviour
         float playerDirectionX = movementVector.x;
         float playerDirectionZ = movementVector.z;
 
-        transform.Translate(Vector3.forward * _playerSpeed * playerDirectionZ * Time.deltaTime + Vector3.right * _playerSpeed * playerDirectionZ * Time.deltaTime);       
+        transform.Translate(Vector3.forward * _playerSpeed * playerDirectionZ * Time.deltaTime * movementCoefficient + 
+                            Vector3.right * _playerSpeed * playerDirectionZ * movementCoefficient * Time.deltaTime);       
     }
 
     // Гравитация персонажа:
@@ -60,9 +57,9 @@ public class PlayerMovement : MonoBehaviour
         }
 
         PlayerFalling();
-        PlayerJumping();
     }
 
+    // Падение персонажа:
     private void PlayerFalling() {
         _playerPosition = Vector3.zero;
         _playerPosition.y = _gravitationForce;
@@ -72,7 +69,7 @@ public class PlayerMovement : MonoBehaviour
     // Прыжок персонажа:
     private void PlayerJumping() 
     {
-        if (Input.GetKeyDown(KeyCode.Space) && playerController.isGrounded)
+        if (playerController.isGrounded)
         {
             _gravitationForce = _jumpPower;
         }

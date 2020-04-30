@@ -5,26 +5,31 @@ using UnityEngine;
 public class ObjectsOnScene : MonoBehaviour
 {
     
+    private float visibleRadius = 1f;   // Величина радиуса персонажа, в котором он может видеть предметы
     private Dictionary<float, string> _objectsCoordinates = new Dictionary<float, string>(); // Словарь, содержащий координату объекта и его тип
 
     // Функция получения координат всех игроков:
-    public Dictionary<float, string> GetPlayersPosition(Vector3 myCoodinates) {
+    public Dictionary<float, string> GetPlayersPosition(Vector3 myCoodinates, float visibleRadiusCoefficient = 1f) 
+    {
         GameObject[] objects = GetObjectsByLayer(8); // 8 - номер слоя InteractionLayers
+
+        float visibleDistance = visibleRadius * visibleRadiusCoefficient; 
 
         for (int i = 0; i < objects.Length; i++)
         {   
-            if (myCoodinates == objects[i].transform.position)  
+            float distanceBetweenObjects = DistanceBetweenObjects(myCoodinates, objects[i].transform.position);
+            if (myCoodinates == objects[i].transform.position || distanceBetweenObjects > visibleDistance)
             {
-                // Если координаты объекта из списка совпадают с координатами персонажа, запрашивающего объекты поблизости,
-                // то эти данные не записываются, т.к. свои данные он не запрашивает.
+                // Первое условие - отстутвие возможности возвращения в списке своих же координат;
+                // Второе условие - реализация области видимости у персонажа; 
             }
             else if (objects[i].tag == "Player") 
             {
-                _objectsCoordinates.Add(DistanceBetweenObjects(myCoodinates, objects[i].transform.position), "Character");
+                _objectsCoordinates.Add(distanceBetweenObjects, "Character");
             }
             else if (objects[i].tag == "other-object") 
             {
-                _objectsCoordinates.Add(DistanceBetweenObjects(myCoodinates, objects[i].transform.position), "other-object");
+                _objectsCoordinates.Add(distanceBetweenObjects, "other-object");
             }
         }
 
