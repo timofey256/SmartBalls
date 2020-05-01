@@ -11,6 +11,10 @@ public class NeyroNet : MonoBehaviour {
     public float Mobility;
     public float Vision;
 
+    public String Name;
+    public String NameFather;
+    public String NameMоther;
+
     public int NumberKills = 0;
     public int LifeTime = 0;
     
@@ -25,8 +29,19 @@ public class NeyroNet : MonoBehaviour {
     public float[,] InputMatrixWeight;
     public float[,] OutputMatrixWeight; 
 
-    public NeyroNet(int NumberInputs=720, int NumberHiddenNeurons=100, int NumberOutputs=9) {
-        // Коэффиченты или параметры особи. Её "Лень" и "Активность". отвечают за скорость выполнения действия и за вероятность его выполнения.
+    public NeyroNet(int NumberInputs=720, int NumberHiddenNeurons=100, int NumberOutputs=9,
+                        String MyName="", String NameFather="", String NameMоther="") {
+        this.NameFather = NameFather;
+        this.NameMоther = NameMоther;
+        this.Name = MyName+"/";
+        this.Name += NameFather;
+        this.Name += "/";
+        this.Name += NameMоther;
+        if(NameMоther.Length == 0 && NameFather.Length == 0) this.Name += "ClanFounder";
+
+        // Коэффиченты или параметры особи. Её "Лень", "Активность" и "Зрение". 
+        // Отвечают за скорость выполнения действия и за вероятность его выполнения и 
+        // за зону обнаружения объектов соответственно.
         this.Аctivity = this.RandomFloat(0.0f, 1.0f);
         this.Mobility = this.RandomFloat(0.5f, 1.5f);
         this.Vision = this.RandomFloat(0.5f, 1.5f);
@@ -107,12 +122,15 @@ public class NeyroNet : MonoBehaviour {
 // Класс описывающий генетический алгоритм
 public class GeneticAlgorithm : MonoBehaviour {
     public NeyroNet[] Persons; // Массив где храняться все особи 
+    public int EraNumber = 1;
     
     public GeneticAlgorithm() {
         this.Persons = new NeyroNet[10];
-        for(int i=0; i<10; i++) { this.Persons[i] = new NeyroNet(720, 100, 9); }
+        for(int i=0; i<10; i++) { this.Persons[i] = new NeyroNet(720, 100, 9, "1/"+((i+1).ToString())); }
     }
 
+    // Метод для скрещивания двух чисел от двух разных особей.
+    // В этом метоже реализованна мутация и параметр коэффицент генов.
     private float GeneСalculation(float Gene1, float Gene2, float GeneK, 
                                     float MutationsK=0.1f, float MutationsFrom=-1f, float MutationsTo=1f) { 
         if(UnityEngine.Random.Range(0, 1f) < MutationsK) 
@@ -122,8 +140,10 @@ public class GeneticAlgorithm : MonoBehaviour {
     }
 
     // Рождение новой особи от двух других
-    public NeyroNet Birth(NeyroNet Person1, NeyroNet Person2, float MutationsK=0.1f) {
-        NeyroNet OutputPerson = new NeyroNet();
+    public NeyroNet Birth(NeyroNet Person1, NeyroNet Person2, int SerialNumber=0, int EraNumber=1, float MutationsK=0.1f, 
+                            int NumberInputs=720, int NumberHiddenNeurons=100, int NumberOutputs=9) {
+        NeyroNet OutputPerson = new NeyroNet(NumberInputs, NumberHiddenNeurons, NumberOutputs, 
+                                                EraNumber+"/"+SerialNumber, Person1.Name.Split('/')[1], Person2.Name.Split('/')[1]);
 
         // Коэффичент ген. Лучшая особь будет иметь перевес перед зудшей в генах будующего потомства.
         float GeneK;
@@ -146,21 +166,32 @@ public class GeneticAlgorithm : MonoBehaviour {
         OutputPerson.Mobility = GeneСalculation(Person1.Mobility, Person2.Mobility, GeneK, MutationsK, 0.5f, 1.5f);
         OutputPerson.Vision = GeneСalculation(Person1.Vision, Person2.Vision, GeneK, MutationsK, 0.5f, 1.5f);
 
-        return OutputPerson;
+        return OutputPerson; // Новая особь!
     }
 
     // Создание новых особей из лучших. Новая эпоха обучения.
     public NeyroNet[] NewEra() {
+        this.EraNumber++;
         this.Sort();
 
-        this.Persons[4] = this.Birth(this.Persons[0], this.Persons[1]);
-        this.Persons[5] = this.Birth(this.Persons[1], this.Persons[2]);
-        this.Persons[6] = this.Birth(this.Persons[2], this.Persons[3]);
-        this.Persons[7] = this.Birth(this.Persons[0], this.Persons[2]);
-        this.Persons[8] = this.Birth(this.Persons[0], this.Persons[3]);
-        this.Persons[9] = this.Birth(this.Persons[1], this.Persons[3]);
+        this.Persons[4] = this.Birth(this.Persons[0], this.Persons[1],  5, this.EraNumber);
+        this.Persons[5] = this.Birth(this.Persons[1], this.Persons[2],  6, this.EraNumber);
+        this.Persons[6] = this.Birth(this.Persons[2], this.Persons[3],  7, this.EraNumber);
+        this.Persons[7] = this.Birth(this.Persons[0], this.Persons[2],  8, this.EraNumber);
+        this.Persons[8] = this.Birth(this.Persons[0], this.Persons[3],  9, this.EraNumber);
+        this.Persons[9] = this.Birth(this.Persons[1], this.Persons[3], 10, this.EraNumber);
 
         return this.Persons;
+    }
+
+    // Выводит информацию о текущей эре в текущий момент времени.
+    public String[] GetStatistics() {
+        String[] OutputStatistics = new String[this.Persons.Length+1];
+        OutputStatistics[0] = "ERA - "+EraNumber + " Persons - "+this.Persons.Length;
+        for(int i=0; i<this.Persons.Length; i++) 
+            OutputStatistics[i+1] = this.Persons[i].Name + " - " + 
+                                this.Persons[i].LifeTime*(this.Persons[i].NumberKills+1) + " Score";
+        return OutputStatistics;
     }
 
     // Сортировка особей по "качеству", которое зависит от 
@@ -182,6 +213,15 @@ public class GeneticAlgorithm : MonoBehaviour {
         }
 
         return this.Persons;
+    }
+
+    void Start() {
+        GeneticAlgorithm test = new GeneticAlgorithm();
+        test.Sort();
+        test.NewEra();
+        String[] test2 = new String[11];
+        test2 = test.GetStatistics();
+        for(int i=0; i<11; i++) print(test2[i]);
     }
 
 }
