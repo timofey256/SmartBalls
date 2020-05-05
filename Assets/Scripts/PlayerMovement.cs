@@ -2,38 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
-TODO:
-  - Обнаружение персонажем пропасти поблизости;
-  - Переделать движение персонажа с помощью заданого вектора;
-  - Заменить Vector3.Distance();
-*/
-
 public class PlayerMovement : MonoBehaviour
 {
-    public GameObject player;
-
     private CharacterController playerController;
-    private ObjectsOnScene playersOnScene;  // Скрипт получения координат других персонажей
+    private ObjectsOnScene objectsOnScene;  // Скрипт получения координат объектов на сцене
+    private PlatformEdges platformEdges;
+
+    private List<Vector3> _playerPositions = new List<Vector3>(); // test!
 
     private float _playerSpeed = 5f; // Скорость персонажа
     private float _jumpPower = 8f;  // Высота прыжка
     private float _gravitationForce = 4f;
-    private Vector3 _playerPosition;
 
     void Start()
     {
-        playersOnScene = GetComponent<ObjectsOnScene>();
+        platformEdges = GetComponent<PlatformEdges>();    
+        objectsOnScene = GetComponent<ObjectsOnScene>();
         playerController = GetComponent<CharacterController>();
 
-        Cursor.lockState = CursorLockMode.Locked;   // Блокировка курсора
+        List<float?> distances = platformEdges.GetDistanceToEdge(gameObject.transform.position);
 
-        Debug.Log(playersOnScene.GetPlayersPosition(player.transform.position, 1).Count);
+        objectsOnScene.GetObjectsPosition(gameObject.transform.position);
+
+        Cursor.lockState = CursorLockMode.Locked;   // Блокировка курсора
     }
 
     void Update()
     {
-        PlayerGravitation();
+        this.PlayerGravitation();
     }
 
     // Ходьба персонажа:
@@ -61,7 +57,7 @@ public class PlayerMovement : MonoBehaviour
 
     // Падение персонажа:
     private void PlayerFalling() {
-        _playerPosition = Vector3.zero;
+        Vector3 _playerPosition = Vector3.zero;
         _playerPosition.y = _gravitationForce;
         playerController.Move(_playerPosition * Time.deltaTime);
     }
@@ -75,9 +71,15 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Удаление персонажа со сцены:
+    private void PlayerDestroy()
+    {
+        Destroy(gameObject);
+    }
+
     // Функция, возвращающая объекты поблизости
     private Dictionary<float, string> CheckAround() 
     {
-        return playersOnScene.GetPlayersPosition(player.transform.position);
+        return objectsOnScene.GetObjectsPosition(gameObject.transform.position);
     }
 }

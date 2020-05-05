@@ -46,7 +46,9 @@
   </PropertyGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\CameraRotation.cs" />
+     <Compile Include="Assets\Scripts\CreatePlayers.cs" />
      <Compile Include="Assets\Scripts\ObjectsOnScene.cs" />
+     <Compile Include="Assets\Scripts\PlatformEdges.cs" />
      <Compile Include="Assets\Scripts\PlayerMovement.cs" />
  <Reference Include="UnityEngine">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2020.1.0b5/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
