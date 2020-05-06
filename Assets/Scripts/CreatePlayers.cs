@@ -76,9 +76,9 @@ public class CreatePlayers : MonoBehaviour
     {
         Vector3 position = new Vector3();
 
-        position.x = Random.Range(-100.0f, 100.0f);
+        position.x = Random.Range(-500.0f, 500.0f);
         position.y = 2f;
-        position.z = Random.Range(-100.0f, 100.0f);
+        position.z = Random.Range(-500.0f, 500.0f);
 
         return position;
     }
