@@ -26,14 +26,15 @@ public class PlayerMovement : MonoBehaviour
         this.PlayerGravitation();
     }
 
-    // Ходьба персонажа:
+    // Ходьба персонажа
+    // Осуществляется в соответствии с заданым вектором, пример: (1, 0, 0); (1, 0, -1)...
     public void PlayerWalking(Vector3 movementVector, float movementCoefficient) 
     {
         float playerDirectionX = movementVector.x;
         float playerDirectionZ = movementVector.z;
         
         gameObject.transform.Translate(
-            Vector3.forward * _playerSpeed * playerDirectionX * Time.deltaTime * movementCoefficient + 
+            Vector3.forward * _playerSpeed * playerDirectionX * movementCoefficient* Time.deltaTime + 
             Vector3.right * _playerSpeed * playerDirectionZ * movementCoefficient * Time.deltaTime);       
     }
 
@@ -70,6 +71,27 @@ public class PlayerMovement : MonoBehaviour
     private void PlayerDestroy()
     {
         Destroy(gameObject);
+    }
+
+    // Меняет цвет игрока в соответствии с переданой строкой
+    // Доступные цвета: "Red", "Yellow", "Violet", "Blue"
+    private void ChangePlayerColor(string color)
+    {
+        Dictionary<string, Material> colors = GetColors();
+        gameObject.GetComponent<Renderer>().material = colors[color];
+    }
+
+    // Возвращает словарь со всеми материалами(цветами):
+    private Dictionary<string, Material> GetColors()
+    {
+        Dictionary<string, Material> materials = new Dictionary<string, Material>();
+
+        materials.Add("Red", Resources.Load("PlayersMaterial_Red", typeof(Material)) as Material);
+        materials.Add("Yellow", Resources.Load("PlayersMaterial_Yellow", typeof(Material)) as Material);
+        materials.Add("Violet", Resources.Load("PlayersMaterial_Violet", typeof(Material)) as Material);
+        materials.Add("Blue", Resources.Load("PlayersMaterial_Blue", typeof(Material)) as Material);
+
+        return materials;
     }
 
     // Функция, возвращающая объекты поблизости
