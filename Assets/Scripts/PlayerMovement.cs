@@ -35,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
 
     // Ходьба персонажа
     // Осуществляется в соответствии с заданым вектором, пример: (1, 0, 0); (1, 0, -1)...
-    public void /*PlayerWalking|*/SetDirectionWalking(Vector3 movementVector, float movementCoefficient) 
+    public void SetDirectionWalking(Vector3 movementVector, float movementCoefficient) 
     {
         this.playerDirectionX = movementVector.x;
         this.playerDirectionZ = movementVector.z;
