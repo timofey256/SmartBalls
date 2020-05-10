@@ -10,9 +10,13 @@ public class PlayerMovement : MonoBehaviour
 
     private List<Vector3> _playerPositions = new List<Vector3>(); // test!
 
-    private float _playerSpeed = 500f; // Скорость персонажа
+    public float _playerSpeed = 500f; // Скорость персонажа
     private float _jumpPower = 800f;  // Высота прыжка
     private float _gravitationForce = 400f;
+
+    private float playerDirectionX = 0f;
+    private float playerDirectionZ = 0f;
+    private float movementCoefficient = 0f;
 
     void Start() {
         objectsOnScene = GroupPlayers.GetComponent<ObjectsOnScene>();
@@ -24,17 +28,18 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         this.PlayerGravitation();
+        gameObject.transform.Translate(
+            Vector3.forward * _playerSpeed * playerDirectionX * movementCoefficient* Time.deltaTime + 
+            Vector3.right * _playerSpeed * playerDirectionZ * movementCoefficient * Time.deltaTime);
     }
 
-    // Ходьба персонажа:
-    public void PlayerWalking(Vector3 movementVector, float movementCoefficient) 
+    // Ходьба персонажа
+    // Осуществляется в соответствии с заданым вектором, пример: (1, 0, 0); (1, 0, -1)...
+    public void /*PlayerWalking|*/SetDirectionWalking(Vector3 movementVector, float movementCoefficient) 
     {
-        float playerDirectionX = movementVector.x;
-        float playerDirectionZ = movementVector.z;
-        
-        gameObject.transform.Translate(
-            Vector3.forward * _playerSpeed * playerDirectionX * Time.deltaTime * movementCoefficient + 
-            Vector3.right * _playerSpeed * playerDirectionZ * movementCoefficient * Time.deltaTime);       
+        this.playerDirectionX = movementVector.x;
+        this.playerDirectionZ = movementVector.z;
+        this.movementCoefficient = movementCoefficient;
     }
 
     // Гравитация персонажа:
@@ -70,6 +75,27 @@ public class PlayerMovement : MonoBehaviour
     private void PlayerDestroy()
     {
         Destroy(gameObject);
+    }
+
+    // Меняет цвет игрока в соответствии с переданой строкой
+    // Доступные цвета: "Red", "Yellow", "Violet", "Blue"
+    private void ChangePlayerColor(string color)
+    {
+        Dictionary<string, Material> colors = GetColors();
+        gameObject.GetComponent<Renderer>().material = colors[color];
+    }
+
+    // Возвращает словарь со всеми материалами(цветами):
+    private Dictionary<string, Material> GetColors()
+    {
+        Dictionary<string, Material> materials = new Dictionary<string, Material>();
+
+        materials.Add("Red", Resources.Load("PlayersMaterial_Red", typeof(Material)) as Material);
+        materials.Add("Yellow", Resources.Load("PlayersMaterial_Yellow", typeof(Material)) as Material);
+        materials.Add("Violet", Resources.Load("PlayersMaterial_Violet", typeof(Material)) as Material);
+        materials.Add("Blue", Resources.Load("PlayersMaterial_Blue", typeof(Material)) as Material);
+
+        return materials;
     }
 
     // Функция, возвращающая объекты поблизости

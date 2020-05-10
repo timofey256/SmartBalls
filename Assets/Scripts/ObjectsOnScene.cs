@@ -61,7 +61,7 @@ public class ObjectsOnScene : MonoBehaviour
 
     // Функция получения всех объектов, находящихся в слое InteractionLayers
     // InteractionLayers - слой, в котором будут находится все объекты, необходимые ген. алгоритму
-    private GameObject[] GetObjectsByLayer(int layer)
+    public GameObject[] GetObjectsByLayer(int layer)
     {
         var goArray = FindObjectsOfType(typeof(GameObject)) as GameObject[];
         var goList = new System.Collections.Generic.List<GameObject>();
