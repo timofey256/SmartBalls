@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 using System;
 
 
@@ -245,29 +246,27 @@ public class ML : MonoBehaviour {
     }
 
     void Update() {
-        for(int i=0; i<Players.Length; i++) {
+        for(int i=0; i<1; i++) {
             Vector3 PositionPerson = Players[i].transform.position;
 
             float[] InputsNeyroNet = new float[720];
 
-            float?[] EdgesTmp = platformEdges.GetDistanceToEdge(PositionPerson).ToArray();
-            float[] Edges = new float[EdgesTmp.Length];
-            for(int j=0; j<Edges.Length; j++) Edges[j] = (float)EdgesTmp[j];
+            float[] Edges = platformEdges.GetDistanceToEdge(PositionPerson).ToArray();
 
             Dictionary<float, string> ObjectsOnSceneInDict = 
                             objectsOnScene.GetObjectsPosition(PositionPerson, Genetic.Persons[i].Vision);
-            
-            float[] DistanceToObjects = new float[360];
-            String[] TypeObjectsString = new String[360];
-            ObjectsOnSceneInDict.Keys.CopyTo(DistanceToObjects, 0);
-            ObjectsOnSceneInDict.Values.CopyTo(TypeObjectsString, 0);
-            
-            //print("360! "+ Edges.Length +" "+ DistanceToObjects.Length);
+
+            float[] DistanceToObjects = ObjectsOnSceneInDict.Keys.ToArray();
+            string[] TypeObjectsString = ObjectsOnSceneInDict.Values.ToArray();
+
+            print("360! "+ DistanceToObjects.Length +" "+ TypeObjectsString.Length);
+
 
             float[] TypeObjects = new float[TypeObjectsString.Length];
             for(int j=0; j<TypeObjects.Length; j++) {
                 if(TypeObjectsString[j] == "Character") TypeObjects[j] = 1.0f;
                 else if(TypeObjectsString[j] == "None") TypeObjects[j] = 0.0f;
+                print(TypeObjectsString[j]);
             }
 
             for(int j=0; j<DistanceToObjects.Length; j++) {
@@ -286,12 +285,13 @@ public class ML : MonoBehaviour {
                 }
             }
             float[] NeyroOutput = Genetic.Persons[i].Prediction(InputsNeyroNet);
-            //if(NeyroOutput[2] >= -0.5f) {
-            //    Players[i].GetComponent<PlayerMovement>().PlayerJumping();
-            //}
-            Players[i].GetComponent<PlayerMovement>().PlayerWalking(
+            if(NeyroOutput[2] >= -0.5f) {
+                Players[i].GetComponent<PlayerMovement>().PlayerJumping();
+            }
+            Players[i].GetComponent<PlayerMovement>().SetDirectionWalking(
                 new Vector3((float)Math.Round(NeyroOutput[0]), 0.0f, (float)Math.Round(NeyroOutput[1])),
                 Genetic.Persons[i].Mobility);
+            print(InputsNeyroNet[43]+" "+InputsNeyroNet[63]+" "+InputsNeyroNet[75]+" "+InputsNeyroNet[361]+" "+InputsNeyroNet[363]+" "+InputsNeyroNet[365]);
         }
     }
 }

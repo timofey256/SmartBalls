@@ -10,9 +10,13 @@ public class PlayerMovement : MonoBehaviour
 
     private List<Vector3> _playerPositions = new List<Vector3>(); // test!
 
-    private float _playerSpeed = 500f; // Скорость персонажа
+    public float _playerSpeed = 500f; // Скорость персонажа
     private float _jumpPower = 800f;  // Высота прыжка
     private float _gravitationForce = 400f;
+
+    private float playerDirectionX = 0f;
+    private float playerDirectionZ = 0f;
+    private float movementCoefficient = 0f;
 
     void Start() {
         objectsOnScene = GroupPlayers.GetComponent<ObjectsOnScene>();
@@ -24,18 +28,18 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         this.PlayerGravitation();
+        gameObject.transform.Translate(
+            Vector3.forward * _playerSpeed * playerDirectionX * movementCoefficient* Time.deltaTime + 
+            Vector3.right * _playerSpeed * playerDirectionZ * movementCoefficient * Time.deltaTime);
     }
 
     // Ходьба персонажа
     // Осуществляется в соответствии с заданым вектором, пример: (1, 0, 0); (1, 0, -1)...
-    public void PlayerWalking(Vector3 movementVector, float movementCoefficient) 
+    public void SetDirectionWalking(Vector3 movementVector, float movementCoefficient) 
     {
-        float playerDirectionX = movementVector.x;
-        float playerDirectionZ = movementVector.z;
-        
-        gameObject.transform.Translate(
-            Vector3.forward * _playerSpeed * playerDirectionX * movementCoefficient* Time.deltaTime + 
-            Vector3.right * _playerSpeed * playerDirectionZ * movementCoefficient * Time.deltaTime);       
+        this.playerDirectionX = movementVector.x;
+        this.playerDirectionZ = movementVector.z;
+        this.movementCoefficient = movementCoefficient;
     }
 
     // Гравитация персонажа:

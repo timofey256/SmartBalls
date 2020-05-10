@@ -9,19 +9,19 @@ public class PlatformEdges : MonoBehaviour
     private float platformRadius = 1000f;   // Радиус платформы 
 
     // Возвращает лист дистанций до краев платформы(номер элемента соответствует углу):
-    public List<float?> GetDistanceToEdge(Vector3 playerPosition)
+    public List<float> GetDistanceToEdge(Vector3 playerPosition)
     {
         List<Vector3> dotsToCheck = this.GetDotsOnPlatform();
-        SortedDictionary<int, float?> distancesToEdge = GetAnglesAndDistances(dotsToCheck, playerPosition);
-        List<float?> distances = this.InsertEmpty(distancesToEdge);
+        SortedDictionary<int, float> distancesToEdge = GetAnglesAndDistances(dotsToCheck, playerPosition);
+        List<float> distances = this.InsertEmpty(distancesToEdge);
 
         return distances;
     }
 
     // Возвращает все уникальные углы, которые можно посчитать:
-    private SortedDictionary<int, float?> GetAnglesAndDistances(List<Vector3> dots, Vector3 defaultPos)
+    private SortedDictionary<int, float> GetAnglesAndDistances(List<Vector3> dots, Vector3 defaultPos)
     {
-        SortedDictionary<int, float?> dict = new SortedDictionary<int, float?>();
+        SortedDictionary<int, float> dict = new SortedDictionary<int, float>();
 
         for (int n = 0; n < dots.Count; n += 1)
         {
@@ -30,7 +30,7 @@ public class PlatformEdges : MonoBehaviour
 
             int angle = AngleOfVectors(playerToNormal, playerToDot);
 
-            float? distance = new float?();
+            float distance = new float();
             distance = Vector3.Distance(defaultPos, dots[n]);            
 
             dict = TryToAdd(angle, distance, dict);
@@ -40,7 +40,7 @@ public class PlatformEdges : MonoBehaviour
     }
 
     // Добавление [угол, дистанция](не добавляет, если такой угол уже есть):
-    private SortedDictionary<int, float?> TryToAdd(int angle, float? distance, SortedDictionary<int, float?> dict)
+    private SortedDictionary<int, float> TryToAdd(int angle, float distance, SortedDictionary<int, float> dict)
     {
         try
         {
@@ -55,11 +55,11 @@ public class PlatformEdges : MonoBehaviour
     }
 
     // Добавляет и считает пропущенные углы:
-    private List<float?> InsertEmpty(SortedDictionary<int, float?> distancesToEdge)
+    private List<float> InsertEmpty(SortedDictionary<int, float> distancesToEdge)
     {
         distancesToEdge = AddIfMissing(distancesToEdge);
 
-        List<float?> distances = new List<float?>();
+        List<float> distances = new List<float>();
         distances = distancesToEdge.Values.ToList();
         distances = SetAverageValuesIfEmpty(distances);
            
@@ -67,13 +67,13 @@ public class PlatformEdges : MonoBehaviour
     }
 
     // Вставляет пропущенные углы, если таковых нет:
-    private SortedDictionary<int, float?> AddIfMissing(SortedDictionary<int, float?> dict) 
+    private SortedDictionary<int, float> AddIfMissing(SortedDictionary<int, float> dict) 
     {
         for (int n = 0; n < dict.Count; n++)
         {
             if (!dict.ContainsKey(n))
             {
-                dict.Add(n, null);
+                dict.Add(n, -1f);
             }
         }   
 
@@ -81,29 +81,29 @@ public class PlatformEdges : MonoBehaviour
     }
 
     // Считает пропущенный угол и вставляет его:
-    private List<float?> SetAverageValuesIfEmpty(List<float?> values)
+    private List<float> SetAverageValuesIfEmpty(List<float> values)
     {
         for (int n = 0; n < values.Count; n++)
         {
 
-            if (n == 0 && values[n] == null) {
+            if (n == 0 && values[n] == -1) {
                 values[n] = values[n+1];
             }    
-            else if (n == values.Count - 1 && values[n] == null) {
+            else if (n == values.Count - 1 && values[n] == -1) {
                 values[values.Count - 1] = values[values.Count - 2];
             }
-            else if (values[n] == null) {
+            else if (values[n] == -1) {
                 int index = 1;
 
-                for (int i = 1; values[n + i] == null; i++)
+                for (int i = 1; values[n + i] == -1; i++)
                 {
                     
-                    if (values[n+i] == null) {
+                    if (values[n+i] == -1) {
                         index++;
                     }
                 }
                 
-                float? average = (values[n - 1] + values[n + index]) / (index + 1);
+                float average = (values[n - 1] + values[n + index]) / (index + 1);
 
                 for (int j = 0; j < index; j++)
                 {
