@@ -9,9 +9,9 @@ public class ObjectsOnScene : MonoBehaviour
     private GameObject[] _objectsOnScene;   // Объекты, которые есть на сцене
 
     // Возвращает координаты и тип каждого объекта:
-    public Dictionary<float, string> GetObjectsPosition(Vector3 myCoodinates, float visibleRadiusCoef = 1f) 
+    public List<Dictionary<float, string>> GetObjectsPosition(Vector3 myCoodinates, float visibleRadiusCoef = 1f) 
     {
-        Dictionary<float, string> _objectsCoordinates = new Dictionary<float, string>(); // Для хранения координаты объекта и его типа
+        List<Dictionary<float, string>> _objectsCoordinates = new List<Dictionary<float, string>>(); // Для хранения координаты объекта и его типа
         float visibleDistance = visibleRadius * visibleRadiusCoef;
         
         if (_objectsOnScene == null) {
@@ -24,14 +24,14 @@ public class ObjectsOnScene : MonoBehaviour
     }
 
     // Получает координаты и тип каждого объекта:
-    private Dictionary<float, string> WriteObjectsCoordinates(GameObject[] objects, Vector3 playerCoodinates, float visibleDistance)
+    private List<Dictionary<float, string>> WriteObjectsCoordinates(GameObject[] objects, Vector3 playerCoodinates, float visibleDistance)
     {
-        Dictionary<float, string> objectsCoordinates = new Dictionary<float, string>();
+        List<Dictionary<float, string>> objectsCoordinates = new List<Dictionary<float, string>>();
 
         for (int i = 0; i < objects.Length; i++)
         {   
             float distanceBetweenObjects = DistanceBetweenObjects(playerCoodinates, objects[i].transform.position);
-            bool isVisibleDistance = distanceBetweenObjects > visibleDistance;
+            bool isVisibleDistance = distanceBetweenObjects < visibleDistance;
 
             objectsCoordinates = AddItem(playerCoodinates, objects[i], isVisibleDistance);
         }
@@ -39,9 +39,9 @@ public class ObjectsOnScene : MonoBehaviour
         return objectsCoordinates;
     }
 
-    private Dictionary<float, string> AddItem(Vector3 playerCoodinates, GameObject otherObject, bool isVisible)
+    private List<Dictionary<float, string>> AddItem(Vector3 playerCoodinates, GameObject otherObject, bool isVisible)
     {
-        Dictionary<float, string> objectsInfo = new Dictionary<float, string>();
+        List<Dictionary<float, string>> objectsInfo = new List<Dictionary<float, string>>();
 
         float distanceBetweenObjects = DistanceBetweenObjects(playerCoodinates, otherObject.transform.position);
 
@@ -50,10 +50,18 @@ public class ObjectsOnScene : MonoBehaviour
             // Первое условие - отстутвие возможности возвращения в списке своих же координат;
         }
         else if (otherObject.tag == "Player") {
-            if(!isVisible) objectsInfo.Add(distanceBetweenObjects, "Character");
-            else objectsInfo.Add(-1.0f, "None"); 
-            // условие - реализация области видимости у персонажа; 
-
+            if(isVisible)   // Условие - реализация области видимости у персонажа; 
+            {
+                Dictionary<float, string> newItem = new Dictionary<float, string>();
+                newItem.Add(distanceBetweenObjects, "Character");
+                objectsInfo.Add(newItem);
+            } 
+            else 
+            {
+                Dictionary<float, string> newItem = new Dictionary<float, string>();
+                newItem.Add(-1.0f, "None");
+                objectsInfo.Add(newItem);
+            }
         }
 
         return objectsInfo;

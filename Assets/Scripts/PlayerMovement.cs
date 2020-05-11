@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     private float _jumpPower = 800f;  // Высота прыжка
     private float _gravitationForce = 400f;
 
+    private Vector3 movementVector;
     private float playerDirectionX = 0f;
     private float playerDirectionZ = 0f;
     private float movementCoefficient = 0f;
@@ -22,23 +23,22 @@ public class PlayerMovement : MonoBehaviour
         objectsOnScene = GroupPlayers.GetComponent<ObjectsOnScene>();
         playerController = GetComponent<CharacterController>();
 
+        movementVector = new Vector3(0f, 0f, 0f);
+
         //Cursor.lockState = CursorLockMode.Locked;   // Блокировка курсора
     }
 
     void Update()
     {
         this.PlayerGravitation();
-        gameObject.transform.Translate(
-            Vector3.forward * _playerSpeed * playerDirectionX * movementCoefficient* Time.deltaTime + 
-            Vector3.right * _playerSpeed * playerDirectionZ * movementCoefficient * Time.deltaTime);
+        gameObject.transform.Translate(movementVector * _playerSpeed * movementCoefficient * Time.deltaTime);
     }
 
     // Ходьба персонажа
     // Осуществляется в соответствии с заданым вектором, пример: (1, 0, 0); (1, 0, -1)...
-    public void SetDirectionWalking(Vector3 movementVector, float movementCoefficient) 
+    public void SetDirectionWalking(Vector3 newMovementVector, float movementCoefficient) 
     {
-        this.playerDirectionX = movementVector.x;
-        this.playerDirectionZ = movementVector.z;
+        this.movementVector = newMovementVector;
         this.movementCoefficient = movementCoefficient;
     }
 
@@ -99,7 +99,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Функция, возвращающая объекты поблизости
-    private Dictionary<float, string> CheckAround() 
+    private List<Dictionary<float, string>> CheckAround() 
     {
         return objectsOnScene.GetObjectsPosition(gameObject.transform.position);
     }
