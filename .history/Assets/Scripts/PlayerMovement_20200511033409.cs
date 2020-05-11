@@ -24,13 +24,12 @@ public class PlayerMovement : MonoBehaviour
         playerController = GetComponent<CharacterController>();
 
         movementVector = new Vector3(0f, 0f, 0f);
+
         //Cursor.lockState = CursorLockMode.Locked;   // Блокировка курсора
     }
 
     void Update()
     {
-
-        
         this.PlayerGravitation();
         gameObject.transform.Translate(movementVector * _playerSpeed * movementCoefficient * Time.deltaTime);
     }

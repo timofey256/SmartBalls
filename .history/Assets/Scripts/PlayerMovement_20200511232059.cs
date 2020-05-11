@@ -29,8 +29,12 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKey(KeyCode.K))
+        {
+            List<Dictionary<float, string>> list = this.CheckAround();
+            Debug.Log(list.Count)
+        }
 
-        
         this.PlayerGravitation();
         gameObject.transform.Translate(movementVector * _playerSpeed * movementCoefficient * Time.deltaTime);
     }

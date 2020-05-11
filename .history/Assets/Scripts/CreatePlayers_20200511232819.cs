@@ -30,7 +30,7 @@ public class CreatePlayers : MonoBehaviour
         Quaternion rotation = new Quaternion(0, 0, 0, 0);
         GameObject newPlayer = Instantiate(playerExample, GeneratePosition(), rotation);
         
-        newPlayer.tag = "Player";
+        newPlayer.tag = 'Player';
         this.ChangeObjectName(newPlayer, playerIndex);
         this.SetParentToObject(newPlayer);
         this.SetObjectColor(newPlayer);

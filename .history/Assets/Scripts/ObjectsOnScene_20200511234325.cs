@@ -30,6 +30,7 @@ public class ObjectsOnScene : MonoBehaviour
 
         for (int i = 0; i < objects.Length; i++)
         {   
+            Debug.Log("objectsCoodinates i: " + i + ", objectsCoodinates count: " + objectsCoordinates.Count);
             float distanceBetweenObjects = DistanceBetweenObjects(playerCoodinates, objects[i].transform.position);
             bool isVisibleDistance = distanceBetweenObjects < visibleDistance;
             objectsCoordinates = AddItem(objectsCoordinates, playerCoodinates, objects[i], isVisibleDistance);
@@ -47,7 +48,8 @@ public class ObjectsOnScene : MonoBehaviour
             // Первое условие - отстутвие возможности возвращения в списке своих же координат;
         }
         else if (otherObject.tag == "Player") {
-
+            Debug.Log("it is player!");
+            Debug.Log("Visible: " + isVisible);
             if(isVisible)   // Условие - реализация области видимости у персонажа; 
             {
                 Dictionary<float, string> newItem = new Dictionary<float, string>();
@@ -60,7 +62,6 @@ public class ObjectsOnScene : MonoBehaviour
                 newItem.Add(-1.0f, "None");
                 existList.Add(newItem);
             }
-            
         }
 
         return existList;

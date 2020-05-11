@@ -29,8 +29,11 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKey(KeyCode.K))
+        {
+            this.CreatePlayer("New player");
+        }
 
-        
         this.PlayerGravitation();
         gameObject.transform.Translate(movementVector * _playerSpeed * movementCoefficient * Time.deltaTime);
     }

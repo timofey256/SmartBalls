@@ -9,10 +9,7 @@ public class CreatePlayers : MonoBehaviour
 
     void Update() 
     {
-        if (Input.GetKey(KeyCode.J))
-        {
-            this.CreatePlayer("New player");
-        }
+        
     }
 
     // Создает n-ое количество игроков:
@@ -30,7 +27,6 @@ public class CreatePlayers : MonoBehaviour
         Quaternion rotation = new Quaternion(0, 0, 0, 0);
         GameObject newPlayer = Instantiate(playerExample, GeneratePosition(), rotation);
         
-        newPlayer.tag = "Player";
         this.ChangeObjectName(newPlayer, playerIndex);
         this.SetParentToObject(newPlayer);
         this.SetObjectColor(newPlayer);

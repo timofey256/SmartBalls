@@ -29,8 +29,6 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-
-        
         this.PlayerGravitation();
         gameObject.transform.Translate(movementVector * _playerSpeed * movementCoefficient * Time.deltaTime);
     }

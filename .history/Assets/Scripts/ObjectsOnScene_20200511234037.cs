@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ObjectsOnScene : MonoBehaviour
 {
-    private float visibleRadius = 10000f;   // Радиуса видимости объектов
+    private float visibleRadius = 5000f;   // Радиуса видимости объектов
     private GameObject[] _objectsOnScene;   // Объекты, которые есть на сцене
 
     // Возвращает координаты и тип каждого объекта:
@@ -30,9 +30,10 @@ public class ObjectsOnScene : MonoBehaviour
 
         for (int i = 0; i < objects.Length; i++)
         {   
+            Debug.Log("objectsCoodinates i: " + i + ", objectsCoodinates count: " + objectsCoordinates.Count);
             float distanceBetweenObjects = DistanceBetweenObjects(playerCoodinates, objects[i].transform.position);
             bool isVisibleDistance = distanceBetweenObjects < visibleDistance;
-            objectsCoordinates = AddItem(objectsCoordinates, playerCoodinates, objects[i], isVisibleDistance);
+            objectsCoordinates = AddItem(playerCoodinates, objects[i], isVisibleDistance);
         }
 
         return objectsCoordinates;
@@ -40,6 +41,8 @@ public class ObjectsOnScene : MonoBehaviour
 
     private List<Dictionary<float, string>> AddItem(List<Dictionary<float, string>> existList, Vector3 playerCoodinates, GameObject otherObject, bool isVisible)
     {
+        List<Dictionary<float, string>> objectsInfo = existList;
+
         float distanceBetweenObjects = DistanceBetweenObjects(playerCoodinates, otherObject.transform.position);
 
         if (playerCoodinates == otherObject.transform.position)
@@ -47,23 +50,23 @@ public class ObjectsOnScene : MonoBehaviour
             // Первое условие - отстутвие возможности возвращения в списке своих же координат;
         }
         else if (otherObject.tag == "Player") {
-
+            Debug.Log("it is player!");
+            Debug.Log("Visible: " + isVisible);
             if(isVisible)   // Условие - реализация области видимости у персонажа; 
             {
                 Dictionary<float, string> newItem = new Dictionary<float, string>();
                 newItem.Add(distanceBetweenObjects, "Character");
-                existList.Add(newItem);
+                objectsInfo.Add(newItem);
             } 
             else 
             {
                 Dictionary<float, string> newItem = new Dictionary<float, string>();
                 newItem.Add(-1.0f, "None");
-                existList.Add(newItem);
+                objectsInfo.Add(newItem);
             }
-            
         }
 
-        return existList;
+        return objectsInfo;
     }
 
     // Функция получения всех объектов, находящихся в слое InteractionLayers
