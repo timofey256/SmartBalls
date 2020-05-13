@@ -8,15 +8,18 @@ public class ObjectsOnScene : MonoBehaviour
     private float visibleRadius = 10000f;   // Радиуса видимости объектов
     private GameObject[] _objectsOnScene;   // Объекты, которые есть на сцене
 
-    // Возвращает координаты и тип каждого объекта:
+    private List<Dictionary<float, string>> radarInfo;
+
+    // Возвращает координаты и тип каждого объекта
     public List<Dictionary<float, string>> GetObjectsPosition(Vector3 myCoodinates, float visibleRadiusCoef = 1f) 
     {
+        radarInfo = FillingList(360);
         List<Dictionary<float, string>> _objectsCoordinates = new List<Dictionary<float, string>>(); // Для хранения координаты объекта и его типа
         float visibleDistance = visibleRadius * visibleRadiusCoef;
 
         if (_objectsOnScene == null) {
             _objectsOnScene = this.GetObjectsByLayer(8); // 8 - номер слоя InteractionLayers 
-        }         
+        }          
 
         _objectsCoordinates = this.WriteObjectsCoordinates(_objectsOnScene, myCoodinates, visibleDistance);
 
@@ -32,35 +35,44 @@ public class ObjectsOnScene : MonoBehaviour
         {   
             float distanceBetweenObjects = DistanceBetweenObjects(playerCoodinates, objects[i].transform.position);
             bool isVisibleDistance = distanceBetweenObjects < visibleDistance;
-            objectsCoordinates = AddItem(objectsCoordinates, playerCoodinates, objects[i], isVisibleDistance);
+
+            Vector2 playerToNormal = new Vector2(500 - playerCoodinates.x, 0 - playerCoodinates.z);
+            Vector2 playerToDot = new Vector2(objects[i].transform.position.x - playerCoodinates.x, 
+                                                objects[i].transform.position.z - playerCoodinates.z);
+
+            int angle = AngleOfVectors(playerToNormal, playerToDot);
+            
+            if (playerCoodinates != objects[i].transform.position)
+            {
+                radarInfo = AddItem(radarInfo, objects[i], isVisibleDistance, angle, distanceBetweenObjects);  
+            }
         }
 
-        return objectsCoordinates;
+        return radarInfo;
     }
 
-    private List<Dictionary<float, string>> AddItem(List<Dictionary<float, string>> existList, Vector3 playerCoodinates, GameObject otherObject, bool isVisible)
+    private List<Dictionary<float, string>> AddItem(List<Dictionary<float, string>> existList, GameObject otherObject, bool isVisible, int angle, float distance)
     {
-        float distanceBetweenObjects = DistanceBetweenObjects(playerCoodinates, otherObject.transform.position);
-
-        if (playerCoodinates == otherObject.transform.position)
-        {
-            // Первое условие - отстутвие возможности возвращения в списке своих же координат;
-        }
-        else if (otherObject.tag == "Player") {
+        if (otherObject.tag == "Player") {
 
             if(isVisible)   // Условие - реализация области видимости у персонажа; 
             {
                 Dictionary<float, string> newItem = new Dictionary<float, string>();
-                newItem.Add(distanceBetweenObjects, "Character");
-                existList.Add(newItem);
+                newItem.Add(distance, "Character");
+                existList[angle - 1] = newItem;
+                // try {
+                    
+                // }
+                // catch {
+                //     Debug.Log($"ERROR: angle {angle}");
+                // }
             } 
             else 
             {
                 Dictionary<float, string> newItem = new Dictionary<float, string>();
                 newItem.Add(-1.0f, "None");
-                existList.Add(newItem);
+                existList[angle - 1] = newItem;
             }
-            
         }
 
         return existList;
@@ -93,5 +105,41 @@ public class ObjectsOnScene : MonoBehaviour
     private float DistanceBetweenObjects(Vector3 objectCoodinates1, Vector3 objectCoodinates2) 
     {
         return Vector3.Distance(objectCoodinates1, objectCoodinates2);
+    }
+
+    // Заполняет список пустыми значениями("-1" - показатель отсутствия игрока по-близости):
+    private List<Dictionary<float, string>> FillingList(int length)
+    {
+        List<Dictionary<float, string>> list = new List<Dictionary<float, string>>();
+        Dictionary<float, string> emptyElement = new Dictionary<float, string>();
+        emptyElement.Add(-1f, "None");
+        for (float n = 0; n < length; n++)
+        {
+            list.Add(emptyElement);
+        }
+
+        return list;
+    }
+
+    private static double AngleOfReference(Vector2 v)
+    {
+        return NormalizeAngle(Atan2(v.y, v.x) / PI * 180);
+    }
+
+    // Возвращает угол между векторами:
+    private static int AngleOfVectors(Vector2 first, Vector2 second)
+    {
+        double angle = NormalizeAngle(AngleOfReference(first) - AngleOfReference(second));
+        return (int)Round(angle);
+    }
+
+    private static double NormalizeAngle(double angle)
+    {
+        bool CheckBottom(double a) => a >= 0;
+        bool CheckTop(double a) => a < 360;
+
+        double turn = CheckBottom(angle) ? -360 : 360;
+        while (!(CheckBottom(angle) && CheckTop(angle))) angle += turn;
+        return angle;
     }
 }

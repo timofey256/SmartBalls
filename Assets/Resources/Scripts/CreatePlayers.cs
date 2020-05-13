@@ -62,10 +62,10 @@ public class CreatePlayers : MonoBehaviour
     {
         List<Material> materials = new List<Material>();
 
-        materials.Add(Resources.Load("PlayersMaterial_Red", typeof(Material)) as Material);
-        materials.Add(Resources.Load("PlayersMaterial_Yellow", typeof(Material)) as Material);
-        materials.Add(Resources.Load("PlayersMaterial_Violet", typeof(Material)) as Material);
-        materials.Add(Resources.Load("PlayersMaterial_Blue", typeof(Material)) as Material);
+        materials.Add(Resources.Load("Materials/PlayersMaterial_Red", typeof(Material)) as Material);
+        materials.Add(Resources.Load("Materials/PlayersMaterial_Yellow", typeof(Material)) as Material);
+        materials.Add(Resources.Load("Materials/PlayersMaterial_Violet", typeof(Material)) as Material);
+        materials.Add(Resources.Load("Materials/PlayersMaterial_Blue", typeof(Material)) as Material);
 
         return materials;
     }

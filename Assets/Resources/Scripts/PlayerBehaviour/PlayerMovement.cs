@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -28,9 +29,16 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void Update()
-    {
+    {        
+        if (Input.GetKey(KeyCode.K))
+        {
+            List<Dictionary<float, string>> list = CheckAround();
+            for (int n = 0; n < list.Count - 1; n++)
+            {
+                Debug.Log(list[n].Values.ToList()[0]);
+            }
+        }
 
-        
         this.PlayerGravitation();
         gameObject.transform.Translate(movementVector * _playerSpeed * movementCoefficient * Time.deltaTime);
     }
