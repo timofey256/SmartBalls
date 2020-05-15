@@ -259,7 +259,6 @@ public class ML : MonoBehaviour {
                     Genetic.Persons[i].LifeTime = CounterTime;
                     Genetic.Persons[i].Life = false;
                     Destroy(Players[i]);
-                    print("DIE");
                 }
 
                 if(Genetic.Persons[i].Life) Living++;
@@ -312,7 +311,6 @@ public class ML : MonoBehaviour {
         }
 
         if(Living == 0) {
-            //for(int i=0; i<Players.Length; i++) { Players[i].GetComponent<PlayerMovement>().PlayerDestroy(); }
             Genetic.NewEra();
             NewEra();
         } 
