@@ -357,7 +357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0980538b5cde0b143a461aa263960d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visibleRadius: 10
+  visibleRadius: 10000
 --- !u!114 &566172750
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -460,7 +460,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1107481447}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.8299804, y: -41, z: -2.984265}
+  m_LocalPosition: {x: 0.8299804, y: 0, z: -2.984265}
   m_LocalScale: {x: 2000, y: 0.001, z: 2000}
   m_Children: []
   m_Father: {fileID: 0}
