@@ -88,7 +88,7 @@ public class PlayerMovement : MonoBehaviour
 
     // Меняет цвет игрока в соответствии с переданой строкой
     // Доступные цвета: "Red", "Yellow", "Violet", "Blue"
-    private void ChangePlayerColor(string color)
+    public void ChangePlayerColor(string color)
     {
         Dictionary<string, Material> colors = GetColors();
         gameObject.GetComponent<Renderer>().material = colors[color];
@@ -99,10 +99,10 @@ public class PlayerMovement : MonoBehaviour
     {
         Dictionary<string, Material> materials = new Dictionary<string, Material>();
 
-        materials.Add("Red", Resources.Load("PlayersMaterial_Red", typeof(Material)) as Material);
-        materials.Add("Yellow", Resources.Load("PlayersMaterial_Yellow", typeof(Material)) as Material);
-        materials.Add("Violet", Resources.Load("PlayersMaterial_Violet", typeof(Material)) as Material);
-        materials.Add("Blue", Resources.Load("PlayersMaterial_Blue", typeof(Material)) as Material);
+        materials.Add("Red", Resources.Load("Materials/PlayersMaterial_Red", typeof(Material)) as Material);
+        materials.Add("Yellow", Resources.Load("Materials/PlayersMaterial_Yellow", typeof(Material)) as Material);
+        materials.Add("Violet", Resources.Load("Materials/PlayersMaterial_Violet", typeof(Material)) as Material);
+        materials.Add("Blue", Resources.Load("Materials/PlayersMaterial_Blue", typeof(Material)) as Material);
 
         return materials;
     }

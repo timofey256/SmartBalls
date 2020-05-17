@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using static System.Math;
 using UnityEngine;
@@ -6,7 +6,6 @@ using UnityEngine;
 public class ObjectsOnScene : MonoBehaviour
 {
     public float visibleRadius = 5000f;   // Радиуса видимости объектов
-    private GameObject[] _objectsOnScene;   // Объекты, которые есть на сцене
 
     private List<Dictionary<float, string>> radarInfo;
 
@@ -17,9 +16,8 @@ public class ObjectsOnScene : MonoBehaviour
         List<Dictionary<float, string>> _objectsCoordinates = new List<Dictionary<float, string>>(); // Для хранения координаты объекта и его типа
         float visibleDistance = visibleRadius * visibleRadiusCoef;
 
-        if (_objectsOnScene == null) {
-            _objectsOnScene = this.GetObjectsByLayer(8); // 8 - номер слоя InteractionLayers 
-        }          
+        // Объекты, которые есть на сцене
+        GameObject[] _objectsOnScene = this.GetObjectsByLayer(8); // 8 - номер слоя InteractionLayers          
 
         _objectsCoordinates = this.WriteObjectsCoordinates(_objectsOnScene, myCoodinates, visibleDistance);
 
@@ -54,18 +52,14 @@ public class ObjectsOnScene : MonoBehaviour
     private List<Dictionary<float, string>> AddItem(List<Dictionary<float, string>> existList, GameObject otherObject, bool isVisible, int angle, float distance)
     {
         if (otherObject.tag == "Player") {
+            if (angle == 360) angle = 0;
 
             if(isVisible)   // Условие - реализация области видимости у персонажа; 
             {
                 Dictionary<float, string> newItem = new Dictionary<float, string>();
                 newItem.Add(distance, "Character");
+                
                 existList[angle] = newItem;
-                // try {
-                    
-                // }
-                // catch {
-                //     Debug.Log($"ERROR: angle {angle}");
-                // }
             } 
             else 
             {
