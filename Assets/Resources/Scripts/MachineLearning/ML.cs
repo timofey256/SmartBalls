@@ -271,6 +271,7 @@ public class ML : MonoBehaviour {
     }
 
     void Update() {
+        
         CounterTime += 1f*Time.deltaTime;
         for(int i=0; i<Players.Length; i++) {
             if(!Genetic.Persons[i].Life) continue;
