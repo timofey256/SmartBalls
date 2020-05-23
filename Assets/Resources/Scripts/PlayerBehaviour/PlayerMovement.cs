@@ -5,41 +5,30 @@ using System.Linq;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private CharacterController playerController;
-    private ObjectsOnScene objectsOnScene;  // Скрипт получения координат объектов на сцене
-    public GameObject GroupPlayers; // Объект родитель всех особей (Create Player)
-
-    private List<Vector3> _playerPositions = new List<Vector3>(); // test!
-
-    public float _playerSpeed = 500f; // Скорость персонажа
+    [SerializeField] private float _playerSpeed = 500f; // Скорость персонажа
+    [SerializeField] private float _power; // Сила отталкивания
     private float _jumpPower = 800f;  // Высота прыжка
     private float _gravitationForce = 400f;
 
+    private GameObject GroupPlayers; // Объект родитель всех особей (Create Player)
+    private CharacterController playerController;
+    private ObjectsOnScene objectsOnScene;  // Скрипт получения координат объектов на сцене
+
     private Vector3 movementVector;
-    private float playerDirectionX = 0f;
-    private float playerDirectionZ = 0f;
     private float movementCoefficient = 0f;
 
-    void Start() {
-        objectsOnScene = GroupPlayers.GetComponent<ObjectsOnScene>();
+    private void Start() 
+    {
         playerController = GetComponent<CharacterController>();
+        objectsOnScene = Resources.Load<ObjectsOnScene>("Scripts/PlayerBehaviour/ObjectsOnScene.cs");
 
         movementVector = new Vector3(0f, 0f, 0f);
         //Cursor.lockState = CursorLockMode.Locked;   // Блокировка курсора
     }
 
-    void Update()
-    {        
-        if (Input.GetKey(KeyCode.K))
-        {
-            List<Dictionary<float, string>> list = CheckAround();
-            for (int n = 0; n < list.Count - 1; n++)
-            {
-                Debug.Log(list[n].Values.ToList()[0]);
-            }
-        }
-
-        this.PlayerGravitation();
+    private void Update()
+    {
+        PlayerGravitation();
         gameObject.transform.Translate(movementVector * _playerSpeed * movementCoefficient * Time.deltaTime);
     }
 
@@ -54,7 +43,6 @@ public class PlayerMovement : MonoBehaviour
     // Гравитация персонажа:
     private void PlayerGravitation() 
     {   
-        
         // Если персонаж в воздухе, то падает:
         if (!playerController.isGrounded)
         {
@@ -88,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
 
     // Меняет цвет игрока в соответствии с переданой строкой
     // Доступные цвета: "Red", "Yellow", "Violet", "Blue"
-    private void ChangePlayerColor(string color)
+    public void ChangePlayerColor(string color)
     {
         Dictionary<string, Material> colors = GetColors();
         gameObject.GetComponent<Renderer>().material = colors[color];
@@ -99,10 +87,10 @@ public class PlayerMovement : MonoBehaviour
     {
         Dictionary<string, Material> materials = new Dictionary<string, Material>();
 
-        materials.Add("Red", Resources.Load("PlayersMaterial_Red", typeof(Material)) as Material);
-        materials.Add("Yellow", Resources.Load("PlayersMaterial_Yellow", typeof(Material)) as Material);
-        materials.Add("Violet", Resources.Load("PlayersMaterial_Violet", typeof(Material)) as Material);
-        materials.Add("Blue", Resources.Load("PlayersMaterial_Blue", typeof(Material)) as Material);
+        materials.Add("Red", Resources.Load("Materials/PlayersMaterial_Red", typeof(Material)) as Material);
+        materials.Add("Yellow", Resources.Load("Materials/PlayersMaterial_Yellow", typeof(Material)) as Material);
+        materials.Add("Violet", Resources.Load("Materials/PlayersMaterial_Violet", typeof(Material)) as Material);
+        materials.Add("Blue", Resources.Load("Materials/PlayersMaterial_Blue", typeof(Material)) as Material);
 
         return materials;
     }
@@ -111,5 +99,18 @@ public class PlayerMovement : MonoBehaviour
     private List<Dictionary<float, string>> CheckAround() 
     {
         return objectsOnScene.GetObjectsPosition(gameObject.transform.position);
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            Rigidbody targetRb = other.gameObject.GetComponent<Rigidbody>();
+            Vector3 targetPos = other.transform.position;
+            Vector3 direction = (targetPos - gameObject.transform.position).normalized;
+
+            targetRb.AddForce(direction * _power, ForceMode.Impulse);
+        }
+        
     }
 }

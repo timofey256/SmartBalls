@@ -5,8 +5,7 @@ using UnityEngine;
 
 public class ObjectsOnScene : MonoBehaviour
 {
-    public float visibleRadius = 5000f;   // Радиуса видимости объектов
-
+    [SerializeField] public float visibleRadius { get;} = 10000f;   // Радиуса видимости объектов
     private List<Dictionary<float, string>> radarInfo;
 
     // Возвращает координаты и тип каждого объекта
